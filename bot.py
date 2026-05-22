@@ -9,49 +9,25 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 logging.basicConfig(level=logging.INFO)
 
 CHANNELS = [
-    {
-        "section": "🏠 בית וטכנולוגיה",
-        "items": [
-            {"name": "🏠 Smart Home & LED",          "url": "https://t.me/SMARTHOMELEDS"},
-            {"name": "💻 מחשבים וגאדג'טים",          "url": "https://t.me/COMPUTERACCESSO"},
-            {"name": "🚗 גאדג'טים לרכב & Dash Cam",  "url": "https://t.me/CARSGAD"},
-        ]
-    },
-    {
-        "section": "🏃 ספורט ופנאי",
-        "items": [
-            {"name": "💪 כושר וספורט",               "url": "https://t.me/FITANDNESS"},
-            {"name": "⛺ קמפינג וטיולים",             "url": "https://t.me/CAMPINGSHOPPING"},
-            {"name": "🌱 גינון וצמחים",               "url": "https://t.me/GARDENINGSS"},
-        ]
-    },
-    {
-        "section": "👕 אופנה",
-        "items": [
-            {"name": "👗 ביגוד נשים",                "url": "https://t.me/CLOTHSWOMENS"},
-            {"name": "👔 ביגוד גברים",                "url": "https://t.me/CLOTHSMENS"},
-        ]
-    },
-    {
-        "section": "👶 ילדים ומשפחה",
-        "items": [
-            {"name": "👶 תינוקות ופעוטות",            "url": "https://t.me/BABIESSTUFFS"},
-        ]
-    },
+    {"name": "🏠 Smart Home & LED",          "url": "https://t.me/SMARTHOMELEDS"},
+    {"name": "💻 מחשבים וגאדג'טים",          "url": "https://t.me/COMPUTERACCESSO"},
+    {"name": "🚗 גאדג'טים לרכב & Dash Cam",  "url": "https://t.me/CARSGAD"},
+    {"name": "💪 כושר וספורט",               "url": "https://t.me/FITANDNESS"},
+    {"name": "⛺ קמפינג וטיולים",             "url": "https://t.me/CAMPINGSHOPPING"},
+    {"name": "🌱 גינון וצמחים",               "url": "https://t.me/GARDENINGSS"},
+    {"name": "👗 ביגוד נשים",                "url": "https://t.me/CLOTHSWOMENS"},
+    {"name": "👔 ביגוד גברים",                "url": "https://t.me/CLOTHSMENS"},
+    {"name": "👶 תינוקות ופעוטות",            "url": "https://t.me/BABIESSTUFFS"},
 ]
 
 def build_keyboard():
     keyboard = []
-    for section in CHANNELS:
-        keyboard.append([
-            InlineKeyboardButton(f"── {section['section']} ──", callback_data="noop")
-        ])
-        row = []
-        for i, item in enumerate(section["items"]):
-            row.append(InlineKeyboardButton(item["name"], url=item["url"]))
-            if len(row) == 2 or i == len(section["items"]) - 1:
-                keyboard.append(row)
-                row = []
+    row = []
+    for i, ch in enumerate(CHANNELS):
+        row.append(InlineKeyboardButton(ch["name"], url=ch["url"]))
+        if len(row) == 2 or i == len(CHANNELS) - 1:
+            keyboard.append(row)
+            row = []
     return InlineKeyboardMarkup(keyboard)
 
 WELCOME_TEXT = (
@@ -66,13 +42,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=build_keyboard()
     )
 
-async def noop_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.callback_query.answer()
-
 async def main():
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(noop_handler, pattern="^noop$"))
     print("AliPlus Bot is running...")
     await app.initialize()
     await app.start()
