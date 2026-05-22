@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 import os
@@ -11,30 +12,30 @@ CHANNELS = [
     {
         "section": "🏠 בית וטכנולוגיה",
         "items": [
-            {"name": "🏠 Smart Home & LED",         "url": "https://t.me/SMARTHOMELEDS"},
-            {"name": "💻 מחשבים וגאדג'טים",         "url": "https://t.me/COMPUTERACCESSO"},
-            {"name": "🚗 גאדג'טים לרכב & Dash Cam", "url": "https://t.me/CARSGAD"},
+            {"name": "🏠 Smart Home & LED",          "url": "https://t.me/SMARTHOMELEDS"},
+            {"name": "💻 מחשבים וגאדג'טים",          "url": "https://t.me/COMPUTERACCESSO"},
+            {"name": "🚗 גאדג'טים לרכב & Dash Cam",  "url": "https://t.me/CARSGAD"},
         ]
     },
     {
         "section": "🏃 ספורט ופנאי",
         "items": [
-            {"name": "💪 כושר וספורט",              "url": "https://t.me/FITANDNESS"},
-            {"name": "⛺ קמפינג וטיולים",            "url": "https://t.me/CAMPINGSHOPPING"},
-            {"name": "🌱 גינון וצמחים",              "url": "https://t.me/GARDENINGSS"},
+            {"name": "💪 כושר וספורט",               "url": "https://t.me/FITANDNESS"},
+            {"name": "⛺ קמפינג וטיולים",             "url": "https://t.me/CAMPINGSHOPPING"},
+            {"name": "🌱 גינון וצמחים",               "url": "https://t.me/GARDENINGSS"},
         ]
     },
     {
         "section": "👕 אופנה",
         "items": [
-            {"name": "👗 ביגוד נשים",               "url": "https://t.me/CLOTHSWOMENS"},
-            {"name": "👔 ביגוד גברים",               "url": "https://t.me/CLOTHSMENS"},
+            {"name": "👗 ביגוד נשים",                "url": "https://t.me/CLOTHSWOMENS"},
+            {"name": "👔 ביגוד גברים",                "url": "https://t.me/CLOTHSMENS"},
         ]
     },
     {
         "section": "👶 ילדים ומשפחה",
         "items": [
-            {"name": "👶 תינוקות ופעוטות",           "url": "https://t.me/BABIESSTUFFS"},
+            {"name": "👶 תינוקות ופעוטות",            "url": "https://t.me/BABIESSTUFFS"},
         ]
     },
 ]
@@ -55,7 +56,7 @@ def build_keyboard():
 
 WELCOME_TEXT = (
     "🛍 ברוכים הבאים ל-AliPlus IL!\n\n"
-    "כל הדילים מעלי אקספרס במקום אחד ✨\n"
+    "כל הדילים מעלי אקספרס במקום אחד\n"
     "בחרו קטגוריה והצטרפו לערוץ הרלוונטי 👇"
 )
 
@@ -68,12 +69,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def noop_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.answer()
 
-def main():
+async def main():
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(noop_handler, pattern="^noop$"))
     print("AliPlus Bot is running...")
-    app.run_polling()
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
